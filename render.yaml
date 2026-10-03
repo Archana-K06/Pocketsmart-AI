@@ -8,7 +8,7 @@ services:
     plan: free            # free web services sleep after 15 min idle
     buildCommand: pip install -r backend/requirements.txt
     startCommand: cd backend && uvicorn app:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
-    healthCheckPath: /startup
+    healthCheckPath: /health
     envVars:
       - key: ENVIRONMENT
         value: production
