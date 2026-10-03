@@ -3,6 +3,6 @@
   "framework": null,
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/(.*)", "destination": "https://YOUR-REAL-SERVICE.onrender.com/$1" }
+    { "source": "/(.*)", "destination": "https://pocketsmart-ai1.onrender.com/$1" }
   ]
 }
