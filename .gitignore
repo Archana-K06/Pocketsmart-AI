@@ -1,0 +1,17 @@
+# secrets & local data (the .env.example templates ARE committed)
+.env
+!.env.example
+*.sqlite3
+*.db
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+# vercel
+.vercel/

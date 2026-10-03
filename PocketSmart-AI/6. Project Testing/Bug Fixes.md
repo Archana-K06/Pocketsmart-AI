@@ -1,0 +1,23 @@
+# Bug Fixes
+
+| ID | Date | Reproduced issue | Fix | Verification |
+|---|---|---|---|---|
+| BF-01 | 2026-09-29 | App startup required a Gemini key; feature routers created clients during import. | Made Gemini optional and added structured offline plans. | No-key startup and all three planner tests pass. |
+| BF-02 | 2026-09-29 | Accounts and history were in memory; history was shared across users. | Added SQLite users/recommendations with per-user queries and foreign keys. | Persistence, clearing, and account-isolation tests pass. |
+| BF-03 | 2026-09-29 | Browser login stored a bearer token in localStorage while logout cleared only a cookie. | Login now sets an HttpOnly cookie; pages use cookie auth; logout clears it. | Browser registration/login/logout and API auth tests pass. |
+| BF-04 | 2026-09-29 | AI-controlled recommendation strings were interpolated into HTML. | Escape generated fields and fallback text before rendering. | Browser injection probe showed literal text and no injected element. |
+| BF-05 | 2026-09-29 | Party fallback left budget unallocated when all service options were deselected. | Added a flexible-needs category and retained the contingency allocation. | Dedicated full-budget regression test passes. |
+| BF-06 | 2026-09-29 | At 390px, private-page navigation expanded the document to 844px. | Let nav items wrap on narrow viewports. | Browser measurements show no horizontal overflow at 390px. |
+| BF-07 | 2026-09-29 | Browser favicon request returned 404. | Added a real SVG icon and `/favicon.ico` redirect. | Redirect and static asset tests pass. |
+| BF-08 | 2026-09-29 | Bcrypt silently treated password suffixes past 72 bytes as equivalent. | Reject passwords exceeding bcrypt's UTF-8 byte limit. | 72-byte password accepted; 73-byte password returns validation error. |
+| BF-09 | 2026-10-02 | README told users to copy `.env.example`, but the file did not exist; `.gitignore` was missing, and a local SQLite database and `__pycache__` were shipped. | Added `.env.example` and `.gitignore`; removed the database file and bytecode caches. | Fresh-clone setup in a new virtual environment. |
+| BF-10 | 2026-10-02 | Gemini model names were hardcoded to `gemini-2.5-flash` / `gemini-2.0-flash`; the 2.0 models are shut down and 2.5 access is restricted, so AI mode could silently never work. | Model chain is configurable (`GEMINI_MODEL`, `GEMINI_FALLBACK_MODELS`); defaults updated. | `test_gemini_failure_falls_back_and_reports_it`. |
+| BF-11 | 2026-10-02 | All Gemini errors were swallowed without a trace, so users saw offline plans with no explanation. | Failures are logged (type + short message, never the key) and the plan carries a tip that the AI was unavailable. | Same test; log output checked. |
+| BF-12 | 2026-10-02 | Gemini output such as `"price": "₹100"` or string allocations raised inside validation and forced a fallback. | Tolerant numeric parsing in `enrichment._num`; validation uses it. | `test_gemini_success_is_enriched`. |
+| BF-13 | 2026-10-02 | SQLite only: data is lost on Render's ephemeral disk. | Persistence moved to SQLAlchemy; `DATABASE_URL` selects PostgreSQL (`postgres://` normalised). Case-insensitive unique indexes work on both. | Full suite passes on SQLite and PostgreSQL 16. |
+| BF-14 | 2026-10-02 | Logout only deleted the browser cookie; a copied token stayed valid until expiry. | Tokens carry a `jti`; sessions are stored server-side and revoked on logout. | `test_logout_revokes_the_token_server_side`. |
+| BF-15 | 2026-10-02 | Random `SECRET_KEY` per process invalidates logins on restart and breaks multi-instance hosting. | Production mode refuses to start without `SECRET_KEY`; sliding session cookie keeps active users signed in. | Manual start-up check; `test_tampered_or_unsessioned_tokens_are_rejected`. |
+| BF-16 | 2026-10-02 | SRS home inputs (quantity of lights, fans, furniture, dining tables) were not collected. | Added fields to form, API model and plan generation. | `test_home_quantities_are_honoured_and_budget_adds_up`. |
+| BF-17 | 2026-10-02 | Items without server-built links relied on client-side URL maps only; the SRS sample code uses `allow_origins=["*"]` together with credentials. | Server builds links from a platform whitelist; CORS uses explicit origins. | `test_unknown_platforms_never_become_links`, `test_cors_allows_only_configured_origins`. |
+| BF-18 | 2026-10-02 | Expired sessions in a browser showed raw JSON `{"detail": ...}`. | Browser requests get a redirect page to `/login?expired=1`; API clients still receive 401 JSON. | `test_browser_without_session_gets_login_redirect_page`. |
+| BF-19 | 2026-10-02 | Dead `state.py` (in-memory list left over from the original design) was unused. | Removed. | Suite passes. |
